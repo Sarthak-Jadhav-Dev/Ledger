@@ -11,6 +11,8 @@ app.use(cookieParser());
 import authRouter from "../backend/routes/auth/authRoutes.router.js"
 app.use("/api/v1/auth", authRouter);
 
-
+//session related routes
+import SessionRouter from "../backend/routes/session/session.routes.js"
+app.use("/api/v1/session", SessionRouter);
 
 export default app;

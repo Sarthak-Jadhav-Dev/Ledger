@@ -19,9 +19,10 @@ const sessionSchema = new mongoose.Schema({
         type:Number,
         default:5,
     },
-    data: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
+    status: {
+        type: String,
+        enum: ["active", "paired", "ended"],
+        default: "active"
     }
 }, { timestamps: true })
 

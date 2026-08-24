@@ -1,5 +1,5 @@
 import { Server } from 'socket.io'
-import { socketAuth } from './middleware/socketAuth.js'
+import { socketAuth } from '../middleware/socketAuth.middleware.js'
 import { handleSession } from './handlers/session.js'
 import { handleClipboard } from './handlers/clipboard.js'
 import { handleFastlane } from './handlers/fastlane.js'

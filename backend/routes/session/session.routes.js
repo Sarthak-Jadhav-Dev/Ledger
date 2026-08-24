@@ -6,6 +6,6 @@ const SessionRouter = Router();
 
 SessionRouter.route("/create").post(verifyJWT,createSession);
 SessionRouter.route("/delete").delete(verifyJWT,deleteSession);
-SessionRouter.route("/status").get(verifyJWT,sessionStatus);
+// SessionRouter.route("/status").get(verifyJWT,sessionStatus);
 
 export default SessionRouter;

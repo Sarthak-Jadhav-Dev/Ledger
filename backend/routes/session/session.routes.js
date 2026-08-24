@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createSession, deleteSession, sessionStatus } from "../../controllers/sessions/session.controller.js";
-import { verifyJWT } from "../../middlewares/auth.middleware.js";
+import { createSession, deleteSession } from "../../controllers/sessions/session.controller.js";
+import { verifyJWT } from "../../middleware/auth.middleware.js";
 
 const SessionRouter = Router();
 

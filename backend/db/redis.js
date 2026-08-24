@@ -1,7 +1,8 @@
 import {createClient} from "redis"
 
 const redisConnect = createClient({
-    url:process.env.REDIS_URL
+    url:process.env.REDIS_URL,
+    token:process.env.REDIS_TOKEN
 })
 
 redisConnect.on("error",(error)=>{

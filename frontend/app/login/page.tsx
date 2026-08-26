@@ -1,10 +1,44 @@
+"use client"
 import Link from "next/link";
-import React from "react";
+import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
-
+import { useAuth } from "../AuthContext";
 export default function LoginPage() {
+
+  const BACKEND_URL = "http://localhost:8000";
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const { setUser } = useAuth();
+
+  const handleLogin = async (e: any) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/v1/auth/signin`, {
+        email,
+        password,
+      }, { withCredentials: true })
+
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        setUser(response.data.user);  // ← populate AuthContext immediately
+        setLoading(false)
+        router.push("/dashboard")
+      } else {
+        throw new Error("Invalid Credentials")
+      }
+    } catch (error) {
+      console.error(error)
+      setLoading(false)
+    }
+  }
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden px-6">
+    <div className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden px-6 pt-20">
       <Navbar />
       {/* Background textures */}
       <div
@@ -45,13 +79,13 @@ export default function LoginPage() {
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
           </Link>
-          <h1 
+          <h1
             className="text-4xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white via-foreground to-steel leading-tight mb-3 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-mode-backwards"
             style={{ animationDelay: "200ms" }}
           >
             Welcome back
           </h1>
-          <p 
+          <p
             className="text-muted text-base font-medium max-w-xs leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-mode-backwards"
             style={{ animationDelay: "300ms" }}
           >
@@ -60,15 +94,15 @@ export default function LoginPage() {
         </div>
 
         {/* Form Card */}
-        <div 
+        <div
           className="relative group animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out fill-mode-backwards"
           style={{ animationDelay: "450ms" }}
         >
           {/* Subtle glowing border effect */}
           <div className="absolute -inset-px bg-linear-to-b from-depth via-transparent to-transparent rounded-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
-          
+
           <div className="relative bg-[#12151b]/95 backdrop-blur-xl border border-depth/50 rounded-2xl p-8 shadow-2xl">
-            <form className="flex flex-col gap-6" action="#" method="POST">
+            <form className="flex flex-col gap-6" onSubmit={handleLogin}>
               <div className="flex flex-col gap-2.5">
                 <label
                   htmlFor="email"
@@ -89,6 +123,8 @@ export default function LoginPage() {
                     placeholder="operator@ledger.local"
                     className="w-full bg-ground/50 border border-depth/80 rounded-lg pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted/40 focus:outline-none focus:border-brass/60 focus:ring-1 focus:ring-brass/60 focus:bg-ground transition-all font-mono text-sm shadow-inner"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -121,6 +157,8 @@ export default function LoginPage() {
                     placeholder="••••••••••••"
                     className="w-full bg-ground/50 border border-depth/80 rounded-lg pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted/40 focus:outline-none focus:border-brass/60 focus:ring-1 focus:ring-brass/60 focus:bg-ground transition-all font-mono text-sm tracking-widest shadow-inner"
                     required
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
                   />
                 </div>
               </div>
@@ -141,7 +179,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p 
+        <p
           className="text-center text-muted text-sm font-medium mt-10 animate-in fade-in duration-1000 ease-out fill-mode-backwards"
           style={{ animationDelay: "700ms" }}
         >

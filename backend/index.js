@@ -1,10 +1,8 @@
-import { createServer} from "http"
-import dotenv from "dotenv";
+import 'dotenv/config';
+import { createServer } from "http"
 import { initSocket } from './socket/index.js'
 import { dbConnect } from "./db/db.js";
 import app from "./app.js";
-
-dotenv.config();
 
 const server = createServer(app);
 

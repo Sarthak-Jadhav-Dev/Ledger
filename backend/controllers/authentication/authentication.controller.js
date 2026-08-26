@@ -1,4 +1,5 @@
 import {User} from "../../models/users.models.js"
+import jwt from "jsonwebtoken"
 
 const options = {
     httpOnly: true,
@@ -17,12 +18,12 @@ const generateAcessAndRefreshToken = async(userId) =>{
 }
 
 export const signin = async(req, res) => {
-    const {identifier, password} = req.body;
-    if(!identifier || !password){
+    const {email, password} = req.body;
+    if(!email || !password){
         return res.status(400).json({message: "All fields are required", status: false})
     }
 
-    const user = await User.findOne({$or: [{username: identifier}, {email: identifier}]})
+    const user = await User.findOne({$or: [{ email}, {email: email}]})
 
     if(!user){
         return res.status(404).json({message: "User not found", status: false})
@@ -36,22 +37,29 @@ export const signin = async(req, res) => {
 
     const {accessToken, refreshToken} = await generateAcessAndRefreshToken(user._id)
 
-    return res.status(200).cookies("accessToken", accessToken, options).cookies("refreshToken", refreshToken, options).json({message: "User logged in successfully", status: true})
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+    return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({message: "User logged in successfully", status: true, token: accessToken, user: loggedInUser})
 }
 
 export const signup = async (req, res) => {
-    const {username, email, password} = req.body
+    const { email, password} = req.body
     
-    if(!username || !email || !password){
+    if(!email || !password){
         return res.status(400).json({message: "All fields are required", status: false})
     }
     
-    const existingUser = await User.findOne({$or: [{username: username}, {email: email}]})
+    const existingUser = await User.findOne({email: email})
     if(existingUser){
         return res.status(409).json({message: "User already exists", status: false})
     }
-    const user = await User.create({username, email, password});
-    return res.status(201).json({message: "User created successfully", status: true, user})
+    try {
+        const username = email.split('@')[0] + Math.floor(Math.random() * 1000);
+        const fullName = email.split('@')[0];
+        const user = await User.create({ email, password, username, fullName });
+        return res.status(201).json({message: "User created successfully", status: true, user})
+    } catch (error) {
+        return res.status(500).json({message: "Error creating user", error: error.message, status: false})
+    }
 }
 
 export const logout = async (req, res) => {
@@ -80,8 +88,9 @@ export const refreshAccessToken = async (req, res) => {
         }
         req.user = user
         const {accessToken, newRefreshToken} = await generateAcessAndRefreshToken(user._id)
-        return res.status(200).cookies("accessToken", accessToken, options).cookies("refreshToken", newRefreshToken, options).json({message: "Access token refreshed successfully", status: true})
+        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", newRefreshToken, options).json({message: "Access token refreshed successfully", status: true})
     } catch (error) {
         return res.status(401).json({message: "Invalid access token", status: false})
     }   
 }
+

@@ -1,10 +1,47 @@
+"use client"
 import Link from "next/link";
-import React from "react";
+import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 
+
 export default function SignupPage() {
+
+  const BACKEND_URL = "http://localhost:8000";
+
+  const [email,setEmail] = useState("");
+  const [password,setPassword] = useState("");
+  const [confirmPassword,setConfirmPassword] = useState("");
+  const [loading,setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async(e:any)=>{
+    e.preventDefault()
+    if(password !== confirmPassword){
+      throw new Error("Please enter correct passwords")
+    }
+    setLoading(true)
+
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/v1/auth/signup`,{
+        email,
+        password,
+      })
+
+      if(response.status === 201 || response.status === 200){
+        setLoading(false)
+        router.push("/login")
+      }else{
+        throw new Error("Invalid Credentials")
+      }
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+  }
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden px-6">
+    <div className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden px-6 pt-20">
       <Navbar />
       {/* Background textures */}
       <div
@@ -68,7 +105,7 @@ export default function SignupPage() {
           <div className="absolute -inset-px bg-linear-to-b from-depth via-transparent to-transparent rounded-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
           
           <div className="relative bg-[#12151b]/95 backdrop-blur-xl border border-depth/50 rounded-2xl p-8 shadow-2xl">
-            <form className="flex flex-col gap-6" action="#" method="POST">
+            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
               <div className="flex flex-col gap-2.5">
                 <label
                   htmlFor="email"
@@ -89,6 +126,8 @@ export default function SignupPage() {
                     placeholder="operator@ledger.local"
                     className="w-full bg-ground/50 border border-depth/80 rounded-lg pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted/40 focus:outline-none focus:border-brass/60 focus:ring-1 focus:ring-brass/60 focus:bg-ground transition-all font-mono text-sm shadow-inner"
                     required
+                    value={email}
+                    onChange={(e)=>setEmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -113,6 +152,8 @@ export default function SignupPage() {
                     placeholder="••••••••••••"
                     className="w-full bg-ground/50 border border-depth/80 rounded-lg pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted/40 focus:outline-none focus:border-brass/60 focus:ring-1 focus:ring-brass/60 focus:bg-ground transition-all font-mono text-sm tracking-widest shadow-inner"
                     required
+                    value={password}
+                    onChange={(e)=>setPassword(e.target.value)}
                   />
                 </div>
               </div>
@@ -137,6 +178,8 @@ export default function SignupPage() {
                     placeholder="••••••••••••"
                     className="w-full bg-ground/50 border border-depth/80 rounded-lg pl-11 pr-4 py-3.5 text-foreground placeholder:text-muted/40 focus:outline-none focus:border-brass/60 focus:ring-1 focus:ring-brass/60 focus:bg-ground transition-all font-mono text-sm tracking-widest shadow-inner"
                     required
+                    value={confirmPassword}
+                    onChange={(e)=>setConfirmPassword(e.target.value)}
                   />
                 </div>
               </div>

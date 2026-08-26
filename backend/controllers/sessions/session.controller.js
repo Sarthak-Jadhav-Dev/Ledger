@@ -37,7 +37,7 @@ export const createSession = async(req,res) => {
     }
 
     //add in redis 
-    await redisClient.setEx(sessionId,timeLimit * 60,"session")
+    await redisClient.set(sessionId, "session", { ex: timeLimit * 60 })
 
     return res.status(201).json({
         success:true,

@@ -1,0 +1,73 @@
+{
+  "title": "Choose the visual direction for Ledger's landing page",
+  "question": "The roll assigned Pneumatic Tube Exchange. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Pneumatic Tube Exchange",
+      "kicker": "THE ROLL",
+      "lineage": "Victorian pneumatic dispatch networks — pressurized capsules shooting through brass tubes between stations",
+      "thesis": "The transfer is a physical capsule you can watch travel — the tube network makes encryption tangible as sealed brass, and arrival feels like a delivered object.",
+      "palette": ["#0a0c10", "#c9a84c", "#1a1d24", "#e8e4dc"],
+      "materials": ["brass tube cross-sections", "pressure gauge dials", "sealed capsule containers", "dark machined metal"],
+      "viewport": "A dark field bisected by a luminous brass tube carrying a sealed capsule from a phone silhouette to a desktop silhouette — the capsule glows with the session code etched on it, pressure gauges flanking the CTA.",
+      "risk": "Steampunk associations if the brass reads ornamental rather than industrial.",
+      "comp": ".impeccable/mocks/decision/assigned.webp"
+    },
+    {
+      "id": "model-pick",
+      "label": "Signal Beam Relay",
+      "kicker": "IMPECCABLE'S PICK",
+      "lineage": "Deep-space communication arrays — focused signal beams crossing void between relay stations",
+      "thesis": "Data is a visible beam of light connecting two endpoints across dark space — the void makes the encryption palpable (nothing else exists to intercept), and the beam's coherence dramatizes speed.",
+      "palette": ["#06080d", "#3b82f6", "#0f172a", "#e2e8f0"],
+      "materials": ["focused light beams", "signal waveforms", "dark void", "crystalline relay nodes"],
+      "viewport": "An SVG beam of structured light connecting a phone node and a desktop node across a dark field — the beam carries visible encrypted packets, the session code pulses at the midpoint relay, and the CTA sits where the beam lands.",
+      "risk": "Reads generic sci-fi if the beam is just a gradient line instead of structured signal with visible data.",
+      "comp": ".impeccable/mocks/decision/model-pick.webp"
+    },
+    {
+      "id": "challenger-locksmith",
+      "label": "Locksmith's Workbench",
+      "verdict": "competitive",
+      "lineage": "Master locksmith workshops — precision key-cutting, tumbler mechanisms, vault engineering",
+      "thesis": "The session code is a key being cut to fit one lock — encryption visualized as physical security engineering, each transfer a lock turned and opened.",
+      "palette": ["#0d0f14", "#94a3b8", "#c0a050", "#1e293b"],
+      "materials": ["machined steel tumblers", "precision-cut key blanks", "vault door mechanisms", "brushed metal surfaces"],
+      "viewport": "A dark workbench where the session code renders as a key being precision-cut from hex digits — the phone and desktop are the lock and door, the key turns in an animated tumbler mechanism at the center.",
+      "case": "Fuses cleanly: the session code as a key is a direct metaphor; loses narrowly on speed — locksmiths imply patience, not 5-second transfers.",
+      "risk": "Over-literal key metaphor becomes clip-art if the mechanisms aren't rendered with real engineering detail.",
+      "comp": ".impeccable/mocks/decision/challenger-locksmith.webp",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-darkroom-safelight-bay-hero.webp"
+    },
+    {
+      "id": "challenger-particle-tunnel",
+      "label": "Particle Accelerator Tunnel",
+      "verdict": "declined",
+      "lineage": "CERN-style particle collider tunnels — data as high-energy particles in a controlled beam",
+      "palette": ["#050709", "#22d3ee", "#0f172a"],
+      "materials": ["tunnel cross-sections", "particle traces", "superconductor coils"],
+      "case": "Fuses poorly: colliders destroy on impact, the opposite of delivering intact data.",
+      "kept": "Tunnel perspective and scale of engineering commitment.",
+      "hero": "https://impeccable.style/worlds/cards/medium-native-algorave-source-floor-hero.webp"
+    }
+  ],
+  "reroll": {
+    "registers": ["safer", "bolder"]
+  },
+  "buildPath": {
+    "value": "comp",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "Clean dark SaaS landing page — gradient hero, feature grid, the arrangement every transfer tool ships.",
+    "palette": ["#0a0a0a", "#ffffff", "#6366f1"],
+    "materials": ["glass cards", "gradient mesh", "device mockups"],
+    "viewport": "Dark gradient hero with headline left, device mockup right, three-column feature grid below.",
+    "risk": "Indistinguishable from Pushbullet, Snapdrop, or any file-sharing tool by design.",
+    "comp": ".impeccable/mocks/decision/canon.webp"
+  },
+  "steer": true
+}

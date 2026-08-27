@@ -54,6 +54,19 @@ const LogoutIcon = () => (
     <line x1="21" y1="12" x2="9" y2="12" />
   </svg>
 );
+const SendIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="22" y1="2" x2="11" y2="13" />
+    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>
+);
+const ReceiveIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
+  </svg>
+);
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 function CopyButton({ value }: { value: string }) {
@@ -238,19 +251,25 @@ export default function DashboardPage() {
       <div
         className={`relative z-10 w-full max-w-5xl mx-auto flex flex-col gap-8 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
       >
-{/* ── Stats row ────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <StatCard label="Active Sessions" value={sessions.length} sub="This session" />
-          <StatCard
-            label="Avg. Time Limit"
-            value={sessions.length > 0 ? `${Math.round(sessions.reduce((a, s) => a + s.time_limit, 0) / sessions.length)} min` : "—"}
-            sub="Across all sessions"
-          />
-          <StatCard
-            label="Last Generated"
-            value={sessions.length > 0 ? sessions[0].session_id : "None"}
-            sub="Most recent key"
-          />
+{/* ── Action Buttons ──────────────────────────────────────── */}
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => router.push("/session")}
+            className="flex items-center justify-center gap-2 h-14 rounded-2xl font-bold text-ground text-lg transition-all duration-300 hover:brightness-110 active:scale-[0.98] hover:shadow-[0_0_24px_rgba(192,160,80,0.35)] relative overflow-hidden group/btn"
+            style={{ background: "linear-gradient(160deg, #d4b464 0%, #c0a050 50%, #8a7038 100%)" }}
+          >
+            <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out bg-linear-to-r from-transparent via-white/20 to-transparent" />
+            <SendIcon size={20} />
+            Send
+          </button>
+          <button
+            onClick={() => router.push("/receive")}
+            className="flex items-center justify-center gap-2 h-14 rounded-2xl font-bold text-foreground text-lg border border-depth/80 bg-[#12151b]/80 backdrop-blur-xl transition-all duration-300 hover:border-brass/50 hover:bg-brass/5 active:scale-[0.98] group/btn"
+          >
+            <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out bg-linear-to-r from-transparent via-white/5 to-transparent" />
+            <ReceiveIcon size={20} />
+            Receive
+          </button>
         </div>
 
         {/* ── Main grid ────────────────────────────────────────── */}
@@ -390,6 +409,21 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* ── Stats row ────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+          <StatCard label="Active Sessions" value={sessions.length} sub="This session" />
+          <StatCard
+            label="Avg. Time Limit"
+            value={sessions.length > 0 ? `${Math.round(sessions.reduce((a, s) => a + s.time_limit, 0) / sessions.length)} min` : "—"}
+            sub="Across all sessions"
+          />
+          <StatCard
+            label="Last Generated"
+            value={sessions.length > 0 ? sessions[0].session_id : "None"}
+            sub="Most recent key"
+          />
         </div>
       </div>
     </div>

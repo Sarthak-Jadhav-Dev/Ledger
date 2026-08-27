@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/AuthContext.jsx"  ],
+, "app/AuthContext.jsx", "app/session/page.jsx", "app/receive/page.jsx"  ],
   "exclude": ["node_modules"]
 }

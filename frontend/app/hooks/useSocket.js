@@ -11,7 +11,14 @@ export const useSocket = () => {
   useEffect(() => {
     const token = localStorage.getItem('token')
 
-    socketRef.current = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000', {
+    const getBackendUrl = () => {
+      if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+        return `http://${window.location.hostname}:8000`;
+      }
+      return process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+    }
+
+    socketRef.current = io(getBackendUrl(), {
       auth: { token: token || null },
       reconnection: true,
       reconnectionAttempts: 5,

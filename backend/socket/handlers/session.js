@@ -10,7 +10,7 @@ export const handleSession = (io, socket) => {
         socket.emit('session-error', { code: 'SESSION_EXPIRED' })
         return
       }
-      const session = JSON.parse(raw)
+      const session = typeof raw === 'string' ? JSON.parse(raw) : raw
       // Join the room
       socket.join(sessionId)
       socket.sessionId = sessionId
@@ -21,7 +21,11 @@ export const handleSession = (io, socket) => {
         // Update status to paired
         session.status = 'paired'
         const ttl = await redisConnect.ttl(`session:${sessionId}`)
-        await redisConnect.setEx(`session:${sessionId}`, ttl, JSON.stringify(session))
+        if (ttl > 0) {
+          await redisConnect.set(`session:${sessionId}`, JSON.stringify(session), { ex: ttl })
+        } else {
+          await redisConnect.set(`session:${sessionId}`, JSON.stringify(session))
+        }
         await Session.findOneAndUpdate({ sessionId }, { status: 'paired' })
 
         socket.emit('session-joined', { role: 'sender', mode: session.mode })

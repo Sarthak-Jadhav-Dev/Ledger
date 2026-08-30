@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import ProtectedRoute from "../ProtectRoute";
 
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+  ? `http://${window.location.hostname}:8000` 
+  : "http://localhost:8000";
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 const LockIcon = ({ size = 18 }: { size?: number }) => (
@@ -40,18 +42,6 @@ const CheckIcon = ({ size = 14 }: { size?: number }) => (
 const ClockIcon = ({ size = 14 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-const PlusIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
-const LogoutIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" y1="12" x2="9" y2="12" />
   </svg>
 );
 const SendIcon = ({ size = 16 }: { size?: number }) => (
@@ -131,7 +121,7 @@ function SessionCard({ session, onDelete }: { session: any; onDelete: (id: strin
           </div>
           <div className="flex items-center gap-2 text-muted text-xs">
             <ClockIcon />
-            <span>{session.time_limit} min</span>
+            <span>{session.timeLimit || 5} min</span>
             <span className="text-depth/80 mx-0.5">·</span>
             <span>{createdAt}</span>
           </div>
@@ -168,31 +158,23 @@ function SessionCard({ session, onDelete }: { session: any; onDelete: (id: strin
 export default function DashboardPage() {
   const router = useRouter();
   const [sessions, setSessions] = useState<any[]>([]);
-  const [timeLimit, setTimeLimit] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { 
+    setMounted(true); 
+    fetchActiveSessions();
+  }, []);
 
-  const handleCreateSession = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  const fetchActiveSessions = async () => {
     try {
-      const response = await axios.post(
-        `${BACKEND_URL}/api/v1/session/create`,
-        { timeLimit: timeLimit ? Number(timeLimit) : 5 },
-        { withCredentials: true }
-      );
-      if (response.status === 201 && response.data.success) {
-        setSessions((prev) => [response.data.data, ...prev]);
-        setTimeLimit("");
-      } else {
-        throw new Error(response.data.message || "Failed to create session");
+      const response = await axios.get(`${BACKEND_URL}/api/v1/session/active`, { withCredentials: true });
+      if (response.data.success) {
+        setSessions(response.data.data);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "An error occurred");
+      setError(err.response?.data?.message || err.message || "Failed to fetch active sessions");
     } finally {
       setLoading(false);
     }
@@ -212,15 +194,6 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await axios.post(`${BACKEND_URL}/api/v1/auth/logout`, {}, { withCredentials: true });
-      router.push("/login");
-    } catch {
-      router.push("/login");
-    }
-  };
-
   return (
     <ProtectedRoute>
     <div className="min-h-screen relative overflow-hidden px-6 pt-24 pb-16">
@@ -228,7 +201,6 @@ export default function DashboardPage() {
 
       {/* ── Ambient background ─────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-0">
-        {/* Dot grid */}
         <div
           className="absolute inset-0 opacity-[0.028]"
           style={{
@@ -236,12 +208,10 @@ export default function DashboardPage() {
             backgroundSize: "40px 40px",
           }}
         />
-        {/* Top-center glow */}
         <div
           className="absolute -top-40 left-1/2 -translate-x-1/2 w-175 h-175 rounded-full opacity-[0.06]"
           style={{ background: "radial-gradient(circle, #c0a050 0%, transparent 65%)" }}
         />
-        {/* Bottom-right glow */}
         <div
           className="absolute bottom-0 right-0 w-100 h-100 rounded-full opacity-[0.04]"
           style={{ background: "radial-gradient(circle, #94a3b8 0%, transparent 70%)" }}
@@ -249,9 +219,9 @@ export default function DashboardPage() {
       </div>
 
       <div
-        className={`relative z-10 w-full max-w-5xl mx-auto flex flex-col gap-8 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+        className={`relative z-10 w-full max-w-3xl mx-auto flex flex-col gap-8 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
       >
-{/* ── Action Buttons ──────────────────────────────────────── */}
+        {/* ── Action Buttons ──────────────────────────────────────── */}
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() => router.push("/session")}
@@ -272,151 +242,12 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* ── Main grid ────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6 items-start">
-
-          {/* ── Create session panel ──────────────────────────── */}
-          <div className="sticky top-6">
-            <div className="relative group">
-              {/* Glow border */}
-              <div className="absolute -inset-px rounded-2xl bg-linear-to-b from-brass/20 via-depth/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative bg-[#12151b]/95 backdrop-blur-xl border border-depth/60 rounded-2xl shadow-2xl overflow-hidden">
-                
-                {/* Panel header */}
-                <div className="px-6 pt-6 pb-4 border-b border-depth/40">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-brass/10 border border-brass/20 flex items-center justify-center text-brass">
-                      <KeyIcon size={14} />
-                    </div>
-                    <h2 className="font-bold text-foreground text-sm">New Session</h2>
-                  </div>
-                </div>
-
-                <div className="p-6 flex flex-col gap-5">
-                  {error && (
-                    <div className="p-3 bg-red-900/20 border border-red-500/30 rounded-xl text-red-300 text-sm flex gap-2 items-start animate-in fade-in duration-300">
-                      <svg className="mt-0.5 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                      <span>{error}</span>
-                    </div>
-                  )}
-
-                  <form className="flex flex-col gap-5" onSubmit={handleCreateSession}>
-                    <div className="flex flex-col gap-2">
-                      <label htmlFor="timeLimit" className="text-[10px] font-bold text-steel uppercase tracking-[0.2em]">
-                        Expiry Duration
-                      </label>
-                      <div className="relative">
-                        <input
-                          id="timeLimit"
-                          type="number"
-                          min="1"
-                          max="1440"
-                          placeholder="5"
-                          className="w-full bg-ground/60 border border-depth/80 rounded-xl pl-4 pr-14 py-3 text-foreground placeholder:text-muted/40 focus:outline-none focus:border-brass/50 focus:ring-1 focus:ring-brass/30 transition-all font-mono text-sm shadow-inner"
-                          value={timeLimit}
-                          onChange={(e) => setTimeLimit(e.target.value)}
-                        />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted font-medium pointer-events-none">min</span>
-                      </div>
-                      <p className="text-[11px] text-muted/60 leading-relaxed">
-                        Defaults to 5 minutes. Session will self-destruct from Redis after expiry.
-                      </p>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full h-11 flex items-center justify-center gap-2 rounded-xl font-bold text-ground text-sm transition-all duration-300 hover:brightness-110 active:scale-[0.98] hover:shadow-[0_0_24px_rgba(192,160,80,0.35)] relative overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ background: "linear-gradient(160deg, #d4b464 0%, #c0a050 50%, #8a7038 100%)" }}
-                    >
-                      <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out bg-linear-to-r from-transparent via-white/20 to-transparent" />
-                      {loading ? (
-                        <>
-                          <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                          Initializing…
-                        </>
-                      ) : (
-                        <>
-                          <PlusIcon />
-                          Generate Keys
-                        </>
-                      )}
-                    </button>
-                  </form>
-
-                  {/* Separator */}
-                  <div className="flex items-center gap-3 text-depth">
-                    <div className="h-px flex-1 bg-depth/60" />
-                    <span className="text-[10px] text-muted/40 uppercase tracking-widest font-medium">Info</span>
-                    <div className="h-px flex-1 bg-depth/60" />
-                  </div>
-
-                  {/* Info bullets */}
-                  <ul className="flex flex-col gap-3">
-                    {[
-                      "Each session gets a unique 8-char ID",
-                      "64-byte AES encryption key generated per session",
-                      "Sessions auto-expire via Redis TTL",
-                    ].map((item, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[11px] text-muted leading-relaxed">
-                        <span className="mt-0.5 w-3.5 h-3.5 rounded-full bg-brass/15 border border-brass/30 flex items-center justify-center shrink-0">
-                          <span className="w-1 h-1 rounded-full bg-brass block" />
-                        </span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ── Sessions list ─────────────────────────────────── */}
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-[11px] font-bold text-steel uppercase tracking-[0.2em]">
-                Active Sessions
-              </h2>
-              {sessions.length > 0 && (
-                <span className="text-[11px] text-muted bg-depth/40 border border-depth/50 px-2 py-0.5 rounded-full font-mono">
-                  {sessions.length} active
-                </span>
-              )}
-            </div>
-
-            {sessions.length === 0 ? (
-              <div className="bg-[#12151b]/50 border border-dashed border-depth/40 rounded-2xl p-16 flex flex-col items-center justify-center text-center">
-                <div
-                  className="w-14 h-14 rounded-2xl border border-depth/60 flex items-center justify-center mb-5 text-muted/50"
-                  style={{ background: "radial-gradient(circle, #1e293b 0%, #0d0f14 100%)" }}
-                >
-                  <KeyIcon size={22} />
-                </div>
-                <h3 className="text-foreground/80 font-semibold mb-2">No sessions initialized</h3>
-                <p className="text-muted text-sm max-w-xs leading-relaxed">
-                  Click <span className="text-brass font-medium">Generate Keys</span> to create an encrypted session with a unique ID and encryption key.
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {sessions.map((session, index) => (
-                  <SessionCard
-                    key={session.session_id + index}
-                    session={session}
-                    onDelete={handleDeleteSession}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* ── Stats row ────────────────────────────────────────── */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
           <StatCard label="Active Sessions" value={sessions.length} sub="This session" />
           <StatCard
             label="Avg. Time Limit"
-            value={sessions.length > 0 ? `${Math.round(sessions.reduce((a, s) => a + s.time_limit, 0) / sessions.length)} min` : "—"}
+            value={sessions.length > 0 ? `${Math.round(sessions.reduce((a, s) => a + (s.timeLimit || 5), 0) / sessions.length)} min` : "—"}
             sub="Across all sessions"
           />
           <StatCard
@@ -425,6 +256,52 @@ export default function DashboardPage() {
             sub="Most recent key"
           />
         </div>
+
+        {/* ── Sessions list ─────────────────────────────────── */}
+        <div className="flex flex-col gap-4 mt-4">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-[11px] font-bold text-steel uppercase tracking-[0.2em]">
+              Active Sessions
+            </h2>
+            {sessions.length > 0 && (
+              <span className="text-[11px] text-muted bg-depth/40 border border-depth/50 px-2 py-0.5 rounded-full font-mono">
+                {sessions.length} active
+              </span>
+            )}
+          </div>
+
+          {loading ? (
+             <div className="p-16 flex items-center justify-center text-muted animate-pulse">Loading active sessions...</div>
+          ) : error ? (
+            <div className="p-8 bg-red-900/20 border border-red-500/30 rounded-xl text-red-300 text-center">
+              {error}
+            </div>
+          ) : sessions.length === 0 ? (
+            <div className="bg-[#12151b]/50 border border-dashed border-depth/40 rounded-2xl p-16 flex flex-col items-center justify-center text-center">
+              <div
+                className="w-14 h-14 rounded-2xl border border-depth/60 flex items-center justify-center mb-5 text-muted/50"
+                style={{ background: "radial-gradient(circle, #1e293b 0%, #0d0f14 100%)" }}
+              >
+                <KeyIcon size={22} />
+              </div>
+              <h3 className="text-foreground/80 font-semibold mb-2">No active sessions</h3>
+              <p className="text-muted text-sm max-w-xs leading-relaxed">
+                Click <span className="text-foreground font-medium">Receive</span> to generate a new session and display your secure QR code.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {sessions.map((session, index) => (
+                <SessionCard
+                  key={session.session_id + index}
+                  session={session}
+                  onDelete={handleDeleteSession}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
     </ProtectedRoute>

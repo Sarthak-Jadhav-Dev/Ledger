@@ -37,7 +37,14 @@ export const createSession = async(req,res) => {
     }
 
     //add in redis 
-    await redisClient.set(sessionId, "session", { ex: timeLimit * 60 })
+    const redisPayload = {
+        session_id: sessionId,
+        encryption_key: encryptionKey,
+        owner: user._id,
+        mode: 'normal',
+        status: 'waiting',
+    }
+    await redisClient.set(`session:${sessionId}`, JSON.stringify(redisPayload), { ex: timeLimit * 60 })
 
     return res.status(201).json({
         success:true,
@@ -67,7 +74,7 @@ export const deleteSession = async(req,res)=>{
         })
     }
 
-    await redisClient.del(session_Id)
+    await redisClient.del(`session:${session_Id}`)
 
     return res.status(200).json({
         success:true,
@@ -75,6 +82,17 @@ export const deleteSession = async(req,res)=>{
     })
 }
 
-// export const sessionStatus = async(req,res)=>{
-
-// }
+export const getActiveSessions = async(req, res) => {
+    const user = req.user;
+    
+    // Fetch all sessions belonging to this user where status is not 'ended'
+    const sessions = await Session.find({
+        owner: user._id,
+        status: { $ne: 'ended' }
+    }).sort({ createdAt: -1 })
+    
+    return res.status(200).json({
+        success: true,
+        data: sessions
+    })
+}

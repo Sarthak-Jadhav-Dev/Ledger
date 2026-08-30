@@ -5,15 +5,15 @@ export const socketAuth = (socket, next) => {
     const token = socket.handshake.auth.token
 
     if (!token) {
-      socket.isSender = false
-      socket.isReceiver = true
+      socket.isSender = true
+      socket.isReceiver = false
       return next()
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
     socket.userId = decoded.id
-    socket.isSender = true
-    socket.isReceiver = false
+    socket.isSender = false
+    socket.isReceiver = true
 
     return next()
 

@@ -7,7 +7,7 @@ import { handleFastlane } from './handlers/fastlane.js'
 export const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL || 'http://localhost:3001',
+      origin: true,
       methods: ['GET', 'POST'],
       credentials: true
     }

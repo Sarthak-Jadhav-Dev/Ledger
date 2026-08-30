@@ -4,6 +4,6 @@ import {verifyJWT} from "../../middleware/auth.middleware.js";
 
 const Merouter = Router();
 
-Merouter.get("/me",verifyJWT, getMe);
+Merouter.route("/me").get(verifyJWT, getMe);
 
 export default Merouter;

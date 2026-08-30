@@ -1,7 +1,14 @@
 import axios from "axios";
 
+const getBaseUrl = () => {
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+        return `http://${window.location.hostname}:8000/api/v1/`;
+    }
+    return "http://localhost:8000/api/v1/";
+};
+
 const axoisInstance = axios.create({
-    baseURL : "http://localhost:8000/api/v1/",
+    baseURL : getBaseUrl(),
     withCredentials: true
 })
 

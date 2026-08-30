@@ -1,145 +1,184 @@
 @import "tailwindcss";
 
-/* ─── Locksmith's Workbench palette ─── */
+/* ─── Fig Mint — Parchment & Ink Palette ─── */
 :root {
-  --ground: #0d0f14;
-  --depth: #1e293b;
-  --steel: #94a3b8;
-  --brass: #c0a050;
-  --brass-bright: #d4b464;
-  --brass-dim: #8a7038;
-  --foreground: #e2e8f0;
-  --foreground-muted: #64748b;
-  --background: var(--ground);
-  --surface: #141820;
-  --surface-raised: #1a2030;
+  /* Backgrounds */
+  --parchment:      #f0ebe0;   /* warm cream — primary background */
+  --parchment-dark: #e6dfd2;   /* slightly deeper cream — cards, surfaces */
+  --stone:          #ddd6c8;   /* stone — secondary surface, input bg */
+  --stone-dark:     #c4bbb0;   /* warm stone — borders, dividers */
+
+  /* Text */
+  --ink:            #1a1410;   /* near-black — primary text, buttons */
+  --ink-muted:      #6b6257;   /* warm gray — secondary text, labels */
+  --ink-faint:      #a0968a;   /* faint — placeholders, disabled */
+
+  /* Accent (used sparingly for focus rings, active states) */
+  --accent:         #2a1f14;   /* deep ink-brown — focus rings */
+  --accent-warm:    #7a5c3a;   /* warm brown — links, hover underlines */
+
+  /* Status */
+  --success:        #2d6a4f;
+  --danger:         #8b2020;
+  --warning:        #7a5c1a;
+
+  /* Aliases for Tailwind @theme */
+  --background:     var(--parchment);
+  --foreground:     var(--ink);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-ground: var(--ground);
-  --color-depth: var(--depth);
-  --color-steel: var(--steel);
-  --color-brass: var(--brass);
-  --color-brass-bright: var(--brass-bright);
-  --color-brass-dim: var(--brass-dim);
-  --color-surface: var(--surface);
-  --color-surface-raised: var(--surface-raised);
-  --color-muted: var(--foreground-muted);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background:    var(--background);
+  --color-foreground:    var(--foreground);
+  --color-parchment:     var(--parchment);
+  --color-parchment-dark: var(--parchment-dark);
+  --color-stone:         var(--stone);
+  --color-stone-dark:    var(--stone-dark);
+  --color-ink:           var(--ink);
+  --color-ink-muted:     var(--ink-muted);
+  --color-ink-faint:     var(--ink-faint);
+  --color-accent:        var(--accent);
+  --color-accent-warm:   var(--accent-warm);
+  --color-muted:         var(--ink-muted);
+
+  --font-display: var(--font-playfair);
+  --font-sans:    var(--font-inter);
+  --font-mono:    var(--font-geist-mono);
 }
 
 /* ─── Base ─── */
-body {
-  background: var(--ground);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-}
-
-/* ─── Browser surface theming ─── */
-::selection {
-  background: color-mix(in oklch, var(--brass) 40%, transparent);
-  color: var(--foreground);
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--ground);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--depth);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--steel);
-}
-
-*:focus-visible {
-  outline: 2px solid var(--brass);
-  outline-offset: 2px;
-}
-
-input, textarea {
-  caret-color: var(--brass);
-}
-
-/* ─── Scroll-driven reveal animation ─── */
-@keyframes reveal-up {
-  from {
-    opacity: 0;
-    filter: blur(4px);
-    transform: translateY(32px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0);
-  }
-}
-
-.reveal {
-  animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-timeline: view();
-  animation-range: entry 0% entry 30%;
-}
-
-.reveal-delay-1 { animation-delay: 0.1s; }
-.reveal-delay-2 { animation-delay: 0.2s; }
-.reveal-delay-3 { animation-delay: 0.3s; }
-
-/* ─── Hero tumbler animation ─── */
-@keyframes tumbler-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-@keyframes capsule-travel {
-  0% { transform: translateX(-20px); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateX(20px); opacity: 0; }
-}
-
-@keyframes key-insert {
-  0% { transform: translateX(-40px); }
-  100% { transform: translateX(0); }
-}
-
-@keyframes pin-align {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(var(--pin-offset)); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-/* ─── Smooth scroll ─── */
 html {
   scroll-behavior: smooth;
 }
 
+body {
+  background: var(--parchment);
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  color: var(--ink);
+}
+
+.font-display {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+/* ─── Selection ─── */
+::selection {
+  background: color-mix(in oklch, var(--ink) 15%, transparent);
+  color: var(--ink);
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--parchment); }
+::-webkit-scrollbar-thumb { background: var(--stone-dark); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+/* ─── Focus ─── */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ─── Inputs ─── */
+input, textarea {
+  caret-color: var(--ink);
+}
+
+/* ─── Paper grain texture ─── */
+.paper-texture {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* ─── Grid-paper background ─── */
+.grid-paper {
+  background-image:
+    linear-gradient(var(--stone-dark)/30 1px, transparent 1px),
+    linear-gradient(90deg, var(--stone-dark)/30 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ─── Reveal animation ─── */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 30%;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes capsule-travel {
+  0%   { transform: translateX(-20px); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(20px);  opacity: 0; }
+}
+
+@keyframes tumbler-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+@keyframes key-insert {
+  0%   { transform: translateX(-40px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes pin-align {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(var(--pin-offset)); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.5; }
+}
+
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
-    animation: none;
-    opacity: 1;
-    filter: none;
-    transform: none;
-  }
-  
+  .reveal { animation: none; opacity: 1; transform: none; }
   svg * {
     animation-duration: 0.01s !important;
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ─── html5-qrcode overrides for parchment theme ─── */
+#reader { border: none !important; background: var(--parchment) !important; }
+#reader__dashboard_section_csr span { color: var(--ink-muted) !important; font-family: var(--font-inter), sans-serif !important; }
+#reader__dashboard_section_csr button {
+  background: var(--ink) !important;
+  color: var(--parchment) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 6px 14px !important;
+  margin: 8px 0 !important;
+  font-family: var(--font-inter), sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+#reader__camera_selection {
+  background: var(--parchment) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--stone-dark) !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+}
+#reader__scan_region { background: #000 !important; border-radius: 4px !important; overflow: hidden !important; }

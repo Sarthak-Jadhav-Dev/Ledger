@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/AuthContext";
 import axios from "axios";
+import { Button, linkButtonVariants } from "@/app/components/ui/button";
 
 const BACKEND_URL = "http://localhost:8000";
 
@@ -21,7 +22,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -46,61 +46,59 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all animate-in slide-in-from-top-full fade-in duration-500 ease-out ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#0d0f14]/80 backdrop-blur-xl border-b border-depth/40 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
-          : "bg-transparent py-6"
+          ? "bg-parchment/95 backdrop-blur-md border-b border-stone-dark shadow-sm py-3"
+          : "bg-transparent py-5"
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+
         {/* Logo */}
         <Link
           href="/"
-          className="text-foreground font-extrabold text-2xl tracking-tighter flex items-center gap-3 group"
+          className="flex items-center gap-2.5 group"
         >
-          <div className="w-9 h-9 rounded-xl bg-surface border border-depth flex items-center justify-center group-hover:border-brass/60 group-hover:shadow-[0_0_15px_rgba(192,160,80,0.15)] transition-all duration-500">
+          <div className="w-8 h-8 rounded-sm bg-ink flex items-center justify-center group-hover:bg-ink/80 transition-colors duration-200">
             <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-brass group-hover:text-brass-bright group-hover:scale-110 transition-all duration-500"
+              width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" strokeWidth="2.5"
+              strokeLinecap="round" strokeLinejoin="round"
+              className="text-parchment"
             >
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
           </div>
-          <span className="bg-clip-text text-transparent bg-linear-to-b from-white to-foreground">Ledger</span>
+          <span className="font-display text-xl font-bold text-ink italic tracking-tight">
+            Ledger
+          </span>
         </Link>
 
-        {/* Links */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wide">
-          <Link href="/#how-it-works" className="relative text-muted hover:text-foreground transition-colors duration-300 group/link">
+        {/* Nav Links */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+          <Link href="/#how-it-works" className="text-ink-muted hover:text-ink transition-colors duration-200 relative group/link">
             How it works
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brass transition-all duration-300 group-hover/link:w-full"></span>
+            <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-ink transition-all duration-200 group-hover/link:w-full" />
           </Link>
-          <Link href="/#features" className="relative text-muted hover:text-foreground transition-colors duration-300 group/link">
+          <Link href="/#features" className="text-ink-muted hover:text-ink transition-colors duration-200 relative group/link">
             Features
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brass transition-all duration-300 group-hover/link:w-full"></span>
+            <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-ink transition-all duration-200 group-hover/link:w-full" />
           </Link>
-          <Link href="/#architecture" className="relative text-muted hover:text-foreground transition-colors duration-300 group/link">
+          <Link href="/#architecture" className="text-ink-muted hover:text-ink transition-colors duration-200 relative group/link">
             Architecture
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brass transition-all duration-300 group-hover/link:w-full"></span>
+            <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-ink transition-all duration-200 group-hover/link:w-full" />
           </Link>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-4">
           {/* GitHub */}
           <Link
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:flex text-muted hover:text-foreground hover:scale-110 transition-all duration-300"
+            className="hidden sm:flex text-ink-muted hover:text-ink transition-colors duration-200"
             aria-label="GitHub"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -111,30 +109,20 @@ export default function Navbar() {
           {/* Auth area */}
           {!loading && (
             user ? (
-              /* ── User menu dropdown ── */
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
-                  className="flex items-center gap-2.5 h-10 pl-3 pr-4 rounded-xl bg-surface/80 border border-depth/60 hover:border-brass/40 hover:bg-surface transition-all duration-200 group"
+                  className="flex items-center gap-2 h-9 pl-2.5 pr-3.5 rounded-sm border border-stone-dark bg-parchment hover:bg-stone hover:border-ink/30 transition-all duration-200"
                 >
-                  {/* Avatar circle */}
-                  <div className="w-6 h-6 rounded-full bg-brass/20 border border-brass/40 flex items-center justify-center text-brass text-[11px] font-bold uppercase">
+                  <div className="w-5 h-5 rounded-sm bg-ink text-parchment text-[10px] font-bold uppercase flex items-center justify-center">
                     {displayName[0]}
                   </div>
-                  <span className="text-sm font-semibold text-foreground">
-                    {displayName}
-                  </span>
-                  {/* Chevron */}
+                  <span className="text-sm font-semibold text-ink">{displayName}</span>
                   <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={`text-muted transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`}
+                    width="12" height="12" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" strokeWidth="2.5"
+                    strokeLinecap="round" strokeLinejoin="round"
+                    className={`text-ink-muted transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`}
                   >
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
@@ -142,27 +130,27 @@ export default function Navbar() {
 
                 {/* Dropdown */}
                 {menuOpen && (
-                  <div className="absolute right-0 top-[calc(100%+8px)] w-48 bg-[#12151b]/95 backdrop-blur-xl border border-depth/60 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="px-4 py-3 border-b border-depth/40">
-                      <p className="text-[10px] font-bold text-steel uppercase tracking-widest">Signed in as</p>
-                      <p className="text-sm font-semibold text-foreground truncate mt-0.5">{user?.email}</p>
+                  <div className="absolute right-0 top-[calc(100%+6px)] w-48 bg-parchment border border-stone-dark rounded-sm shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                    <div className="px-4 py-3 border-b border-stone-dark">
+                      <p className="text-[10px] font-bold text-ink-faint uppercase tracking-widest">Signed in as</p>
+                      <p className="text-sm font-semibold text-ink truncate mt-0.5">{user?.email}</p>
                     </div>
-                    <div className="p-1.5 flex flex-col gap-0.5">
+                    <div className="p-1 flex flex-col gap-0.5">
                       <Link
                         href="/dashboard"
                         onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-foreground hover:bg-brass/10 hover:text-brass transition-all duration-150"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-sm text-sm font-medium text-ink hover:bg-stone transition-colors duration-150"
                       >
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
                         </svg>
                         Dashboard
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-muted hover:bg-red-500/10 hover:text-red-400 transition-all duration-150"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-sm text-sm font-medium text-ink-muted hover:bg-red-50 hover:text-red-700 transition-colors duration-150"
                       >
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
                         </svg>
                         Sign out
@@ -172,15 +160,7 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              /* ── Get Started button ── */
-              <Link
-                href="/signup"
-                className="relative overflow-hidden h-10 px-6 inline-flex items-center justify-center rounded-lg text-sm font-bold text-ground transition-all duration-300 hover:brightness-110 active:scale-[0.98] hover:shadow-[0_0_15px_rgba(212,180,100,0.3)] group/btn"
-                style={{ background: "linear-gradient(180deg, #d4b464 0%, #c0a050 50%, #8a7038 100%)" }}
-              >
-                <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out bg-linear-to-r from-transparent via-white/20 to-transparent" />
-                <span className="relative z-10">Get Started</span>
-              </Link>
+              <Link href="/signup" className={linkButtonVariants()}>Get Started</Link>
             )
           )}
         </div>

@@ -22,4 +22,8 @@ app.use("/api/auth", Merouter);
 import SessionRouter from "./routes/session/session.routes.js"
 app.use("/api/v1/session", SessionRouter);
 
+//file routes
+import FileRouter from "./routes/files/file.router.js"
+app.use("/api/v1/upload", FileRouter);
+
 export default app;

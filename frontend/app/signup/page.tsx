@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { BACKEND_URL } from "@/lib/config";
 
 export default function SignupPage() {
-  const BACKEND_URL = "http://localhost:8000";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

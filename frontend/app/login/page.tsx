@@ -7,9 +7,9 @@ import Navbar from "../components/Navbar";
 import { useAuth } from "../AuthContext";
 import { Button, linkButtonVariants } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { BACKEND_URL } from "@/lib/config";
 
 export default function LoginPage() {
-  const BACKEND_URL = "http://localhost:8000";
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")

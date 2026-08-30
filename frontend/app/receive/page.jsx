@@ -10,6 +10,7 @@ import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Textarea } from '../components/ui/textarea'
 import { Input } from '../components/ui/input'
+import { APP_URL } from '@/lib/config'
 
 export default function ReceivePage() {
   const [sessionId, setSessionId] = useState('')
@@ -133,9 +134,7 @@ export default function ReceivePage() {
     ? JSON.stringify({ session_id: session.session_id, encryption_key: session.encryption_key })
     : ''
 
-  const appLinkValue = typeof window !== 'undefined'
-    ? `http://192.168.1.3:3000/session?action=scan`
-    : ''
+  const appLinkValue = `${APP_URL}/session?action=scan`
 
   return (
     <ProtectedRoute>
@@ -195,7 +194,7 @@ export default function ReceivePage() {
                     </p>
                     <div className="p-4 rounded-sm bg-white border border-stone-dark shadow-sm hover:shadow-md transition-shadow duration-300">
                       {loading || !session ? (
-                        <div className="w-[180px] h-[180px] flex flex-col items-center justify-center gap-3 text-ink-faint">
+                        <div className="w-45 h-45 flex flex-col items-center justify-center gap-3 text-ink-faint">
                           <svg className="animate-spin" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                           </svg>
@@ -273,7 +272,7 @@ export default function ReceivePage() {
                     {feed.map(item => (
                       <div
                         key={item.id}
-                        className="border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/20 hover:shadow-sm transition-all duration-200 animate-in fade-in slide-in-from-top-2 duration-300"
+                        className="border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/20 hover:shadow-sm transition-all animate-in fade-in slide-in-from-top-2 duration-300"
                       >
                         {/* Item header */}
                         <div className="flex items-center justify-between mb-3 pb-3 border-b border-stone-dark">
@@ -284,8 +283,8 @@ export default function ReceivePage() {
                         </div>
 
                         {/* Content */}
-                        <div className="bg-stone/50 rounded-sm p-4 border border-stone-dark mb-4 max-h-[280px] overflow-y-auto">
-                          <p className="text-ink text-sm font-mono break-words leading-relaxed whitespace-pre-wrap">
+                        <div className="bg-stone/50 rounded-sm p-4 border border-stone-dark mb-4 max-h-70 overflow-y-auto">
+                          <p className="text-ink text-sm font-mono wrap-break-word leading-relaxed whitespace-pre-wrap">
                             {item.content}
                           </p>
                         </div>

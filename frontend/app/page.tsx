@@ -452,7 +452,7 @@ export default function Home() {
           </div>
 
           <div className="reveal flex justify-center mb-12 overflow-x-auto pb-4">
-            <div className="min-w-[560px] flex justify-center w-full">
+            <div className="min-w-140 flex justify-center w-full">
               <ArchitectureDiagram />
             </div>
           </div>

@@ -1,7 +1,7 @@
 import express from 'express'
-import { uploadFile, downloadFile, deleteFile } from '../controllers/files/files.controller.js'
-import { verifyJWT } from '../middleware/auth.middleware.js'
-import { upload } from '../helpers/multer.helpers.js'
+import { uploadFile, downloadFile, deleteFile } from '../../controllers/files/files.controller.js'
+import { verifyJWT } from '../../middleware/auth.middleware.js'
+import { upload } from '../../helpers/multer.helpers.js'
 
 const FileRouter = express.Router()
 

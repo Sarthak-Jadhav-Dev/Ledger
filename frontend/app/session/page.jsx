@@ -170,7 +170,7 @@ export default function SessionPage() {
           )}
 
           {/* Main Card */}
-          <div className="w-full border border-stone-dark bg-parchment rounded-sm p-8 flex flex-col items-center min-h-[320px] justify-center">
+          <div className="w-full border border-stone-dark bg-parchment rounded-sm p-8 flex flex-col items-center min-h-80 justify-center">
             {status === 'paired' ? (
               <div className="w-full flex flex-col gap-5 animate-in fade-in duration-400">
                 <div className="flex items-center gap-3 pb-4 border-b border-stone-dark">

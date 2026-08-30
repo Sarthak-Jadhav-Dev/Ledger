@@ -2,6 +2,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { BACKEND_URL } from "@/lib/config";
 
 const AuthContext = createContext<any>(null);
 
@@ -13,7 +14,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const token = localStorage.getItem("token");
 
         if (token) {
-            fetch("http://localhost:8000/api/auth/me", {
+            fetch(`${BACKEND_URL}/api/auth/me`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

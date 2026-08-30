@@ -7,10 +7,7 @@ import ProtectedRoute from "../ProtectRoute";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent } from "../components/ui/card";
-
-const BACKEND_URL = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
-  ? `http://${window.location.hostname}:8000`
-  : "http://localhost:8000";
+import { BACKEND_URL } from "@/lib/config";
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 const LockIcon = ({ size = 18 }: { size?: number }) => (
@@ -101,7 +98,7 @@ function SessionCard({ session, onDelete }: { session: any; onDelete: (id: strin
     : "Just now";
 
   return (
-    <div className="border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/25 hover:shadow-sm transition-all duration-200 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div className="border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/25 hover:shadow-sm transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
 
       {/* Top row */}
       <div className="flex items-start justify-between gap-3 mb-4">

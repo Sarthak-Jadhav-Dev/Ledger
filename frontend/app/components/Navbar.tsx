@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/AuthContext";
 import axios from "axios";
 import { Button, linkButtonVariants } from "@/app/components/ui/button";
-
-const BACKEND_URL = "http://localhost:8000";
+import { BACKEND_URL } from "@/lib/config";
 
 export default function Navbar() {
   const { user, loading, setUser } = useAuth();

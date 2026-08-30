@@ -94,7 +94,7 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {/* GitHub */}
           <Link
-            href="https://github.com"
+            href="https://github.com/Sarthak-Jadhav-Dev/Ledger"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:flex text-ink-muted hover:text-ink transition-colors duration-200"

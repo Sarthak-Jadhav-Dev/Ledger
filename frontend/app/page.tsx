@@ -87,6 +87,7 @@ function DataBeamMechanism() {
       {/* Relay node */}
       <g transform="translate(400, 200) scale(1.4)">
         <rect x="-60" y="-20" width="120" height="40" rx="4" fill="#e6dfd2" stroke="#c4bbb0" strokeWidth="1.5" />
+        <rect x="-60" y="-20" width="120" height="40" rx="4" fill="none" stroke="#1a1410" strokeWidth="1" className="animate-[pulse-glow_2s_infinite]" />
         <text x="0" y="6" textAnchor="middle" fill="#1a1410" fontFamily="var(--font-geist-mono), monospace" fontSize="16" fontWeight="bold">
           {SESSION_CODE}
         </text>
@@ -216,7 +217,7 @@ function Step({ number, statusText, title, description, footerLeft, footerRight 
   description: string; footerLeft: string; footerRight: string;
 }) {
   return (
-    <div className="reveal flex flex-col justify-between border border-stone-dark bg-parchment p-8 sm:p-10 rounded-sm text-left group hover:border-ink/30 hover:shadow-md transition-all duration-300">
+    <div className="reveal hover-spotlight flex flex-col justify-between border border-stone-dark bg-parchment p-8 sm:p-10 rounded-sm text-left group hover:border-ink/30 hover:shadow-md transition-all duration-300">
       <div>
         <div className="flex items-center justify-between pb-5 border-b border-stone-dark mb-7">
           <span className="text-ink font-bold text-[10px] tracking-[0.25em] uppercase">STEP / 0{number}</span>
@@ -247,7 +248,7 @@ function FeatureCard({ title, description, icon }: {
   title: string; description: string; icon: React.ReactNode;
 }) {
   return (
-    <div className="reveal relative group p-6 border border-stone-dark bg-parchment hover:border-ink/25 hover:shadow-md transition-all duration-300 rounded-sm">
+    <div className="reveal hover-spotlight relative group p-6 border border-stone-dark bg-parchment hover:border-ink/25 hover:shadow-md transition-all duration-300 rounded-sm">
       {/* Corner accents */}
       <svg className="absolute top-0 left-0 w-3 h-3 text-stone-dark group-hover:text-ink/20 transition-colors" viewBox="0 0 12 12">
         <path d="M0 0 L12 0 L12 1.5 L1.5 1.5 L1.5 12 L0 12 Z" fill="currentColor" />
@@ -339,7 +340,7 @@ export default function Home() {
             </div>
 
             {/* Headline — editorial, serif */}
-            <div>
+            <div className="animate-[float_6s_ease-in-out_infinite]">
               <h1 className="font-display text-6xl sm:text-7xl md:text-[5.5rem] font-bold text-ink leading-[0.92] tracking-tight">
                 Encrypted
                 <br />
@@ -488,7 +489,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/signup" id="cta-final-get-started" className={linkButtonVariants('default', 'xl')}>Get Started — It&apos;s Free</Link>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" id="cta-final-github" className={linkButtonVariants('outline', 'xl') + ' gap-2'}>
+              <a href="https://github.com/Sarthak-Jadhav-Dev/Ledger" target="_blank" rel="noopener noreferrer" id="cta-final-github" className={linkButtonVariants('outline', 'xl') + ' gap-2'}>
                 {icons.github} View Source
               </a>
             </div>

@@ -27,12 +27,11 @@ export const metadata: Metadata = {
     "Move clipboard, text, links, and files between your phone and PC in seconds. End-to-end encrypted, browser-based, no install required. Open source.",
 };
 
-type LayoutProps<T extends string> = {
+export default function RootLayout({
+  children,
+}: Readonly<{
   children: React.ReactNode;
-  params?: Record<T, string>;
-};
-
-export default function RootLayout({ children }: LayoutProps<"/">) {
+}>) {
   return (
     <html
       lang="en"

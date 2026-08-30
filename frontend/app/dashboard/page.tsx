@@ -98,7 +98,9 @@ function SessionCard({ session, onDelete }: { session: any; onDelete: (id: strin
     : "Just now";
 
   return (
-    <div className="border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/25 hover:shadow-sm transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div className="relative border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/30 hover:shadow-[0_0_20px_rgba(26,20,16,0.04)] transition-all animate-in fade-in slide-in-from-bottom-2 duration-300 group">
+      {/* Active left border glow */}
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-600 rounded-l-sm opacity-50 group-hover:opacity-80 transition-opacity" />
 
       {/* Top row */}
       <div className="flex items-start justify-between gap-3 mb-4">
@@ -205,13 +207,17 @@ export default function DashboardPage() {
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-3">
-            <Button size="xl" onClick={() => router.push("/session")} className="gap-2">
-              <SendIcon size={18} />
-              Send
+            <Button size="xl" onClick={() => router.push("/session")} className="gap-2 group">
+              <span className="group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-2">
+                <SendIcon size={18} />
+                Send
+              </span>
             </Button>
-            <Button size="xl" variant="outline" onClick={() => router.push("/receive")} className="gap-2">
-              <ReceiveIcon size={18} />
-              Receive
+            <Button size="xl" variant="outline" onClick={() => router.push("/receive")} className="gap-2 group">
+              <span className="group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-2">
+                <ReceiveIcon size={18} />
+                Receive
+              </span>
             </Button>
           </div>
 
@@ -256,8 +262,8 @@ export default function DashboardPage() {
                 {error}
               </div>
             ) : sessions.length === 0 ? (
-              <div className="border border-dashed border-stone-dark rounded-sm py-16 flex flex-col items-center justify-center text-center bg-parchment/60">
-                <div className="w-12 h-12 rounded-sm border border-stone-dark flex items-center justify-center mb-4 text-ink-faint bg-stone">
+              <div className="border border-dashed border-stone-dark rounded-sm py-16 flex flex-col items-center justify-center text-center bg-parchment/60 animate-in fade-in duration-700">
+                <div className="w-12 h-12 rounded-sm border border-stone-dark flex items-center justify-center mb-4 text-ink-faint bg-stone animate-[pulse-glow_3s_infinite_ease-in-out]">
                   <KeyIcon size={20} />
                 </div>
                 <h3 className="text-ink font-semibold mb-1.5">No active sessions</h3>

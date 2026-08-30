@@ -192,17 +192,32 @@ export default function SessionPage() {
                 />
                 <Button
                   size="lg"
-                  className="w-full"
+                  className="w-full relative transition-all duration-300"
                   onClick={() => {
                     if (textToSend.trim() && sessionId) {
-                      sendClipboard(sessionId, textToSend)
-                      setTextToSend('')
+                      const btn = document.getElementById("send-btn");
+                      if (btn) btn.classList.add("encrypting");
+                      setTimeout(() => {
+                        sendClipboard(sessionId, textToSend)
+                        setTextToSend('')
+                        if (btn) btn.classList.remove("encrypting");
+                      }, 400);
                     }
                   }}
                   disabled={!textToSend.trim()}
+                  id="send-btn"
                 >
-                  Encrypt & Send
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4 opacity-0 transition-opacity absolute encrypt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    <span className="btn-text transition-transform">Encrypt & Send</span>
+                  </span>
                 </Button>
+                <style jsx>{`
+                  #send-btn.encrypting .btn-text { transform: translateX(12px); }
+                  #send-btn.encrypting .encrypt-icon { opacity: 1; transform: translateX(-40px); animation: pulse-glow 0.4s infinite; }
+                `}</style>
               </div>
             ) : status === 'waiting' ? (
               <div className="flex flex-col items-center justify-center gap-5 animate-in fade-in duration-400">
@@ -283,13 +298,15 @@ export default function SessionPage() {
           )}
 
           <div className="mt-6 w-full max-w-xs">
-            <label className={`flex items-center justify-center gap-3 px-5 py-3 rounded-xl border cursor-pointer transition w-full ${uploading
-                ? 'border-zinc-700 text-zinc-600 cursor-not-allowed'
-                : 'border-zinc-700 text-zinc-300 hover:border-blue-500'
+            <label className={`flex items-center justify-center gap-3 px-5 py-3 rounded-sm border cursor-pointer transition-all duration-300 w-full ${uploading
+                ? 'border-stone-dark bg-stone text-ink-muted cursor-not-allowed'
+                : 'border-stone-dark bg-parchment hover:bg-stone hover:border-ink/40 text-ink'
               }`}>
-              <span>📎</span>
-              <span className="text-sm">
-                {uploading ? `Uploading ${uploadProgress}%` : 'Send File'}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={uploading ? "animate-pulse" : ""}>
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+              </svg>
+              <span className="text-sm font-semibold tracking-wide">
+                {uploading ? `Encrypting ${uploadProgress}%...` : 'Send File'}
               </span>
               <input
                 type="file"

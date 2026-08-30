@@ -181,7 +181,8 @@ export default function ReceivePage() {
                     <p className="text-xs text-ink-muted text-center mb-6 leading-relaxed">
                       Scan with your phone's camera to open the Sender page.
                     </p>
-                    <div className="p-4 rounded-sm bg-white border border-stone-dark shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div className="relative overflow-hidden p-4 rounded-sm bg-white border border-stone-dark shadow-sm hover:shadow-md transition-shadow duration-300">
+                      <div className="absolute top-0 left-0 w-full h-0.5 bg-ink/30 shadow-[0_0_10px_rgba(26,20,16,0.3)] animate-scan" />
                       <QRCodeSVG value={appLinkValue} size={180} level="Q" includeMargin={false} fgColor="#1a1410" />
                     </div>
                   </div>
@@ -192,7 +193,10 @@ export default function ReceivePage() {
                     <p className="text-xs text-ink-muted text-center mb-6 leading-relaxed">
                       Scan with the web app's scanner to securely pair devices.
                     </p>
-                    <div className="p-4 rounded-sm bg-white border border-stone-dark shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div className="relative overflow-hidden p-4 rounded-sm bg-white border border-stone-dark shadow-sm hover:shadow-md transition-shadow duration-300">
+                      {!loading && session && (
+                        <div className="absolute top-0 left-0 w-full h-0.5 bg-ink/30 shadow-[0_0_10px_rgba(26,20,16,0.3)] animate-scan" style={{ animationDelay: '1s' }} />
+                      )}
                       {loading || !session ? (
                         <div className="w-45 h-45 flex flex-col items-center justify-center gap-3 text-ink-faint">
                           <svg className="animate-spin" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -237,7 +241,7 @@ export default function ReceivePage() {
             ) : (
               <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {/* Status Bar */}
-                <div className="flex items-center justify-between mb-6 px-5 py-4 border border-stone-dark bg-parchment rounded-sm">
+                <div className={`flex items-center justify-between mb-6 px-5 py-4 border rounded-sm transition-all duration-700 ${phonePaired ? 'border-green-300 bg-green-50' : 'border-stone-dark bg-parchment'}`}>
                   <div className="flex items-center gap-3">
                     <span className="relative flex h-2.5 w-2.5">
                       <span className={`absolute inline-flex h-full w-full rounded-full opacity-50 animate-ping ${phonePaired ? 'bg-green-500' : 'bg-amber-500'}`} />
@@ -272,7 +276,7 @@ export default function ReceivePage() {
                     {feed.map(item => (
                       <div
                         key={item.id}
-                        className="border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/20 hover:shadow-sm transition-all animate-in fade-in slide-in-from-top-2 duration-300"
+                        className="border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/20 hover:shadow-sm transition-all animate-in fade-in slide-in-from-bottom-8 duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] fill-mode-both"
                       >
                         {/* Item header */}
                         <div className="flex items-center justify-between mb-3 pb-3 border-b border-stone-dark">

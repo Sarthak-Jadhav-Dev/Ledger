@@ -48,9 +48,9 @@ export const useSocket = () => {
     }
   }, [])
 
-  const joinSession = useCallback((sessionId) => {
+  const joinSession = useCallback((sessionId, role) => {
     console.log('Joining session:', sessionId, 'Socket exists:', !!socketRef.current)
-    socketRef.current?.emit('join-session', { sessionId })
+    socketRef.current?.emit('join-session', { sessionId, role })
   }, [])
 
   const killSession = useCallback((sessionId) => {

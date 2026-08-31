@@ -81,7 +81,7 @@ export default function ReceivePage() {
 
   useEffect(() => {
     if (session?.session_id && connected) {
-      joinSession(session.session_id)
+      joinSession(session.session_id, 'receiver')
     }
   }, [session, connected])
 
@@ -127,7 +127,7 @@ export default function ReceivePage() {
   const handleJoin = () => {
     if (!sessionId.trim()) return
     setError(null)
-    joinSession(sessionId.trim().toUpperCase())
+    joinSession(sessionId.trim().toUpperCase(), 'receiver')
   }
 
   const copyToClipboard = (text) => navigator.clipboard.writeText(text)

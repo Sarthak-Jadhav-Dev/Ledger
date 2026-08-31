@@ -2,7 +2,7 @@ import redisConnect from '../../db/redis.js'
 import {Session} from '../../models/session.models.js'
 
 export const handleSession = (io, socket) => {
-  socket.on('join-session', async ({ sessionId }) => {
+  socket.on('join-session', async ({ sessionId, role }) => {
     try {
       // Check Redis session is active
       const raw = await redisConnect.get(`session:${sessionId}`)
@@ -15,7 +15,7 @@ export const handleSession = (io, socket) => {
       socket.join(sessionId)
       socket.sessionId = sessionId
 
-      if (socket.isSender) {
+      if (role === 'sender') {
         socket.role = 'sender'
 
         // Update status to paired

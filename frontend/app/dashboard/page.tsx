@@ -1,5 +1,5 @@
 "use client"
-import axios from "axios";
+import axoisInstance from "../helpers/axios";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
@@ -168,7 +168,7 @@ export default function DashboardPage() {
 
   const fetchActiveSessions = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/v1/session/active`, { withCredentials: true });
+      const response = await axoisInstance.get('/session/active');
       if (response.data.success) setSessions(response.data.data);
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || "Failed to fetch active sessions");
@@ -179,9 +179,8 @@ export default function DashboardPage() {
 
   const handleDeleteSession = async (sessionId: string) => {
     try {
-      const response = await axios.delete(`${BACKEND_URL}/api/v1/session/delete`, {
-        data: { session_Id: sessionId },
-        withCredentials: true,
+      const response = await axoisInstance.delete('/session/delete', {
+        data: { session_Id: sessionId }
       });
       if (response.status === 200 && response.data.success) {
         setSessions((prev) => prev.filter((s) => s.session_id !== sessionId));

@@ -76,7 +76,7 @@ export default function SessionPage() {
           const data = JSON.parse(decodedText)
           if (data.session_id) {
             setSessionId(data.session_id)
-            joinSession(data.session_id)
+            joinSession(data.session_id, 'sender')
             setStatus('waiting')
             scanner.clear().catch(e => { })
             setShowScanner(false)
@@ -94,7 +94,7 @@ export default function SessionPage() {
     if (!sessionId.trim()) return
     setError(null)
     setStatus('waiting')
-    joinSession(sessionId.trim().toUpperCase())
+    joinSession(sessionId.trim().toUpperCase(), 'sender')
   }
 
   const handleKill = () => {

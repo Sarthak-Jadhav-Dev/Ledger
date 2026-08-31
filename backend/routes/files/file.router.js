@@ -5,8 +5,8 @@ import { upload } from '../../helpers/multer.helpers.js'
 
 const FileRouter = express.Router()
 
-// Upload — only logged in users
-FileRouter.post('/', verifyJWT, upload.single('file'), uploadFile)
+// Upload — no auth needed so paired phones can upload
+FileRouter.post('/', upload.single('file'), uploadFile)
 
 // Download — NO auth needed
 // College PC has no login, must be able to download

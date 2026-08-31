@@ -1,12 +1,11 @@
-import api from './axios'
+import axiosInstance from '../app/helpers/axios'
 
 export const uploadFile = async (file, sessionId, onProgress) => {
-  // Use FormData to send file
   const formData = new FormData()
   formData.append('file', file)
   formData.append('sessionId', sessionId)
 
-  const res = await api.post('/upload', formData, {
+  const res = await axiosInstance.post('/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     },

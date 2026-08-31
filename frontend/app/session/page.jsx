@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Html5QrcodeScanner } from 'html5-qrcode'
 import { useSocket } from '../hooks/useSocket'
+import { uploadFile } from '../../lib/upload'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import ProtectedRoute from '../ProtectRoute'
@@ -26,7 +27,7 @@ export default function SessionPage() {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [uploadStatus, setUploadStatus] = useState(null)
 
-  const { joinSession, killSession, sendClipboard, paired, onSessionJoined, onSessionKilled, onSessionError, connected, socketReady } = useSocket()
+  const { joinSession, killSession, sendClipboard, sendFastlaneFile, paired, onSessionJoined, onSessionKilled, onSessionError, connected, socketReady } = useSocket()
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -116,11 +117,12 @@ export default function SessionPage() {
     setUploadStatus('uploading')
 
     try {
-      // Simulate upload progress
-      for (let i = 0; i <= 100; i += 10) {
-        setUploadProgress(i)
-        await new Promise(r => setTimeout(r, 50))
-      }
+      const data = await uploadFile(file, sessionId, (progress) => {
+        setUploadProgress(progress)
+      })
+      
+      // Notify receiver about the uploaded file
+      sendFastlaneFile(sessionId, data.downloadUrl, data.filename, data.size)
 
       setUploadStatus('sent')
 

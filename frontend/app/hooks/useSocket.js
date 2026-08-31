@@ -64,6 +64,10 @@ export const useSocket = () => {
     })
   }, [])
 
+  const sendFastlaneFile = useCallback((sessionId, fileUrl, filename, size) => {
+    socketRef.current?.emit('fastlane-file', { sessionId, fileUrl, filename, size })
+  }, [])
+
   const onSessionJoined = useCallback((cb) => {
     socketRef.current?.on('session-joined', cb)
   }, [])
@@ -98,6 +102,7 @@ export const useSocket = () => {
     joinSession,
     killSession,
     sendClipboard,
+    sendFastlaneFile,
     onSessionJoined,
     onReceiveClipboard,
     onSessionKilled,

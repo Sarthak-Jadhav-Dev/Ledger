@@ -1,12 +1,15 @@
-"use client"
-import Link from "next/link";
-import axios from "axios";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Navbar from "../components/Navbar";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { BACKEND_URL } from "@/lib/config";
+'use client'
+import Link from 'next/link';
+import axios from 'axios';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Navbar from '../components/Navbar';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { BACKEND_URL } from '@/lib/config';
+
+// Prevent static prerendering - this page requires dynamic client-side rendering
+export const dynamic = 'force-dynamic'
 
 export default function SignupPage() {
 

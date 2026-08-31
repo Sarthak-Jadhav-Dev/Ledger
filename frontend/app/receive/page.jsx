@@ -12,6 +12,9 @@ import { Textarea } from '../components/ui/textarea'
 import { Input } from '../components/ui/input'
 import { APP_URL } from '@/lib/config'
 
+// Prevent static prerendering - this page requires dynamic client-side rendering
+export const dynamic = 'force-dynamic'
+
 export default function ReceivePage() {
   const [sessionId, setSessionId] = useState('')
   const [session, setSession] = useState(null)

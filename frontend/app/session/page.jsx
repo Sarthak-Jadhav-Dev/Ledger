@@ -11,6 +11,9 @@ import { Input } from '../components/ui/input'
 import { Textarea } from '../components/ui/textarea'
 import { Badge } from '../components/ui/badge'
 
+// Prevent static prerendering - this page requires dynamic client-side rendering
+export const dynamic = 'force-dynamic'
+
 export default function SessionPage() {
   const router = useRouter()
   const [sessionId, setSessionId] = useState('')

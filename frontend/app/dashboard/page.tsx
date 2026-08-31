@@ -9,6 +9,9 @@ import { Badge } from "../components/ui/badge";
 import { Card, CardContent } from "../components/ui/card";
 import { BACKEND_URL } from "@/lib/config";
 
+// Prevent static prerendering - this page requires dynamic client-side rendering
+export const dynamic = 'force-dynamic'
+
 // ─── Icons ───────────────────────────────────────────────────────────────────
 const LockIcon = ({ size = 18 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

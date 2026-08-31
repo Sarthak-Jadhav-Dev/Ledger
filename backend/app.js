@@ -4,7 +4,7 @@ import cors from "cors"
 const app = express();
 
 app.use(cors({
-    origin: true,
+    origin: ["https://ledger-murex-beta.vercel.app", "http://localhost:3000"],
     credentials: true,
 }));
 app.use(express.json());

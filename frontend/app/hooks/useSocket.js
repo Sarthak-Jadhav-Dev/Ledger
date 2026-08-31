@@ -12,9 +12,6 @@ export const useSocket = () => {
     const token = localStorage.getItem('token')
 
     const getBackendUrl = () => {
-      if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-        return `http://${window.location.hostname}:8000`;
-      }
       return process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
     }
 

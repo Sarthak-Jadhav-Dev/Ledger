@@ -26,4 +26,9 @@ app.use("/api/v1/session", SessionRouter);
 import FileRouter from "./routes/files/file.router.js"
 app.use("/api/v1/upload", FileRouter);
 
+// Health check endpoint for cron job (Render keep-alive)
+app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 export default app;

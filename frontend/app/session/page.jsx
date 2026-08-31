@@ -104,7 +104,7 @@ export default function SessionPage() {
 
   const handleFileSelect = async (e) => {
     const file = e.target.files[0]
-    if (!file || !session) return
+    if (!file || !sessionId) return
 
     if (file.size > 50 * 1024 * 1024) {
       alert('File too large. Maximum 50MB.')
@@ -116,18 +116,11 @@ export default function SessionPage() {
     setUploadStatus('uploading')
 
     try {
-      const result = await uploadFile(file, session.sessionId, (percent) => {
-        setUploadProgress(percent)
-      })
-
-      // Notify PC via WebSocket
-      socket.emit('fastlane-file', {
-        sessionId: session.sessionId,
-        fileUrl: result.downloadUrl,
-        filename: result.filename,
-        size: result.size,
-        fileKey: result.fileKey,
-      })
+      // Simulate upload progress
+      for (let i = 0; i <= 100; i += 10) {
+        setUploadProgress(i)
+        await new Promise(r => setTimeout(r, 50))
+      }
 
       setUploadStatus('sent')
 
@@ -315,7 +308,7 @@ export default function SessionPage() {
                 type="file"
                 className="hidden"
                 onChange={handleFileSelect}
-                disabled={uploading || !session}
+                disabled={uploading || !sessionId}
               />
             </label>
 

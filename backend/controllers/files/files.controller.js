@@ -20,7 +20,7 @@ export const uploadFile = async (req, res) => {
 
     const timer = setTimeout(() => {
       deleteFileFromDisk(file.filename)
-    }, 15 * 60 * 1000) // 15 min
+    }, 5 * 60 * 1000) // 5 min
 
     // Store timer reference so we can cancel if needed
     fileTimers[file.filename] = timer
@@ -32,7 +32,7 @@ export const uploadFile = async (req, res) => {
         fileKey: file.filename,       // generated name on disk
         downloadUrl,
         size: file.size,
-        expiresIn: 900                // seconds
+        expiresIn: 300                // seconds
       }
     })
 

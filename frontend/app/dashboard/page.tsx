@@ -43,14 +43,17 @@ const ClockIcon = ({ size = 13 }: { size?: number }) => (
     <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
   </svg>
 );
-const SendIcon = ({ size = 16 }: { size?: number }) => (
+const ScanIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+    <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" />
+    <path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+    <line x1="7" y1="12" x2="17" y2="12" />
   </svg>
 );
-const ReceiveIcon = ({ size = 16 }: { size?: number }) => (
+const DisplayIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+    <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
   </svg>
 );
 
@@ -204,21 +207,21 @@ export default function DashboardPage() {
           {/* Page header */}
           <div>
             <h1 className="font-display text-3xl font-bold italic text-ink mb-1">Dashboard</h1>
-            <p className="text-ink-muted text-sm">Manage your active encrypted sessions.</p>
+            <p className="text-ink-muted text-sm">Scan or display a QR code to pair devices and transfer data securely.</p>
           </div>
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-3">
             <Button size="xl" onClick={() => router.push("/session")} className="gap-2 group">
               <span className="group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-2">
-                <SendIcon size={18} />
-                Send
+                <ScanIcon size={18} />
+                Scan QR
               </span>
             </Button>
             <Button size="xl" variant="outline" onClick={() => router.push("/receive")} className="gap-2 group">
               <span className="group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-2">
-                <ReceiveIcon size={18} />
-                Receive
+                <DisplayIcon size={18} />
+                Display QR
               </span>
             </Button>
           </div>
@@ -270,7 +273,7 @@ export default function DashboardPage() {
                 </div>
                 <h3 className="text-ink font-semibold mb-1.5">No active sessions</h3>
                 <p className="text-ink-muted text-sm max-w-xs leading-relaxed">
-                  Click <span className="font-semibold text-ink">Receive</span> to generate a new session and display your secure QR code.
+                  Click <span className="font-semibold text-ink">Display QR</span> to generate a session code, or <span className="font-semibold text-ink">Scan QR</span> to join an existing one.
                 </p>
               </div>
             ) : (

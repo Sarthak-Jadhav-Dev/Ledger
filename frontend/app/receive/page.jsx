@@ -1,8 +1,9 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import axoisInstance from '../helpers/axios'
 import { useSocket } from '../hooks/useSocket'
+import { uploadFile } from '../../lib/upload'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import ProtectedRoute from '../ProtectRoute'
@@ -15,7 +16,7 @@ import { APP_URL } from '@/lib/config'
 // Prevent static prerendering - this page requires dynamic client-side rendering
 export const dynamic = 'force-dynamic'
 
-export default function ReceivePage() {
+export default function DisplayPage() {
   const [sessionId, setSessionId] = useState('')
   const [session, setSession] = useState(null)
   const [joined, setJoined] = useState(false)
@@ -24,8 +25,17 @@ export default function ReceivePage() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
 
+  // Bidirectional: sending state
+  const [textToSend, setTextToSend] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadStatus, setUploadStatus] = useState(null)
+  const [activeTab, setActiveTab] = useState('receive') // 'receive' | 'send'
+
   const {
     joinSession,
+    sendClipboard,
+    sendFastlaneFile,
     onSessionJoined,
     onReceiveClipboard,
     onSessionKilled,
@@ -39,7 +49,6 @@ export default function ReceivePage() {
   useEffect(() => {
     handleCreateSession()
     socket?.on('fastlane-file-ready', ({ fileUrl, filename, size }) => {
-
       // Add to feed
       addToFeed('file', {
         url: fileUrl,
@@ -139,6 +148,35 @@ export default function ReceivePage() {
 
   const appLinkValue = `${APP_URL}/session?action=scan`
 
+  // Bidirectional: file upload handler
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0]
+    if (!file || !sessionId) return
+
+    if (file.size > 50 * 1024 * 1024) {
+      alert('File too large. Maximum 50MB.')
+      return
+    }
+
+    setUploading(true)
+    setUploadProgress(0)
+    setUploadStatus('uploading')
+
+    try {
+      const data = await uploadFile(file, sessionId, (progress) => {
+        setUploadProgress(progress)
+      })
+
+      sendFastlaneFile(sessionId, data.downloadUrl, data.filename, data.size)
+      setUploadStatus('sent')
+    } catch (err) {
+      setUploadStatus('failed')
+      console.error('Upload failed', err)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-parchment flex flex-col">
@@ -150,8 +188,8 @@ export default function ReceivePage() {
 
             {/* Header */}
             <div className="mb-10">
-              <h1 className="font-display text-3xl font-bold italic text-ink mb-1">Receive Data</h1>
-              <p className="text-ink-muted text-sm">Connect a device to receive encrypted files and links.</p>
+              <h1 className="font-display text-3xl font-bold italic text-ink mb-1">Display QR</h1>
+              <p className="text-ink-muted text-sm">Show your QR code for the other device to scan and pair.</p>
             </div>
 
             {/* Status banners */}
@@ -182,7 +220,7 @@ export default function ReceivePage() {
                   <div className="border border-stone-dark bg-parchment rounded-sm p-8 flex flex-col items-center">
                     <h3 className="text-sm font-bold text-ink mb-1 uppercase tracking-widest">1. Open the App</h3>
                     <p className="text-xs text-ink-muted text-center mb-6 leading-relaxed">
-                      Scan with your phone's camera to open the Sender page.
+                      Scan with your phone's camera to open the Scan page.
                     </p>
                     <div className="relative overflow-hidden p-4 rounded-sm bg-white border border-stone-dark shadow-sm hover:shadow-md transition-shadow duration-300">
                       <div className="absolute top-0 left-0 w-full h-0.5 bg-ink/30 shadow-[0_0_10px_rgba(26,20,16,0.3)] animate-scan" />
@@ -192,9 +230,9 @@ export default function ReceivePage() {
 
                   {/* QR 2 — Session Connect */}
                   <div className="border border-stone-dark bg-parchment rounded-sm p-8 flex flex-col items-center">
-                    <h3 className="text-sm font-bold text-ink mb-1 uppercase tracking-widest">2. Connect to Session</h3>
+                    <h3 className="text-sm font-bold text-ink mb-1 uppercase tracking-widest">2. Pair Devices</h3>
                     <p className="text-xs text-ink-muted text-center mb-6 leading-relaxed">
-                      Scan with the web app's scanner to securely pair devices.
+                      Scan this code with the app's scanner to securely pair.
                     </p>
                     <div className="relative overflow-hidden p-4 rounded-sm bg-white border border-stone-dark shadow-sm hover:shadow-md transition-shadow duration-300">
                       {!loading && session && (
@@ -218,7 +256,7 @@ export default function ReceivePage() {
                 <div className="w-full max-w-sm border border-stone-dark bg-parchment rounded-sm p-6">
                   <div className="flex items-center gap-4 mb-5">
                     <div className="h-px flex-1 bg-stone-dark" />
-                    <span className="text-[10px] font-bold text-ink-faint uppercase tracking-widest">Manual Entry</span>
+                    <span className="text-[10px] font-bold text-ink-faint uppercase tracking-widest">No Camera? Enter Code</span>
                     <div className="h-px flex-1 bg-stone-dark" />
                   </div>
                   <div className="flex flex-col gap-3">
@@ -251,7 +289,7 @@ export default function ReceivePage() {
                       <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${phonePaired ? 'bg-green-600' : 'bg-amber-500'}`} />
                     </span>
                     <div>
-                      <p className="text-sm font-bold text-ink">{phonePaired ? 'Sender Connected' : 'Awaiting Sender'}</p>
+                      <p className="text-sm font-bold text-ink">{phonePaired ? 'Device Paired' : 'Awaiting Device'}</p>
                       <p className="text-[10px] text-ink-faint uppercase tracking-widest">Connection Status</p>
                     </div>
                   </div>
@@ -261,60 +299,168 @@ export default function ReceivePage() {
                   </div>
                 </div>
 
-                {/* Feed */}
-                {feed.length === 0 ? (
-                  <div className="border border-dashed border-stone-dark rounded-sm py-20 flex flex-col items-center justify-center text-center bg-parchment/60">
-                    <div className="w-12 h-12 rounded-sm border border-stone-dark flex items-center justify-center mb-4 text-ink-faint bg-stone">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
-                      </svg>
-                    </div>
-                    <h3 className="text-ink font-semibold mb-1">Awaiting Data</h3>
-                    <p className="text-sm text-ink-muted max-w-sm leading-relaxed">
-                      Once the sender transmits text, links, or files, they will appear here instantly.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {feed.map(item => (
-                      <div
-                        key={item.id}
-                        className="border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/20 hover:shadow-sm transition-all animate-in fade-in slide-in-from-bottom-8 duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] fill-mode-both"
-                      >
-                        {/* Item header */}
-                        <div className="flex items-center justify-between mb-3 pb-3 border-b border-stone-dark">
-                          <Badge variant="outline">
-                            {item.type === 'url' ? 'Link' : item.type === 'code' ? 'Code' : item.type === 'fastlane' ? 'FastLane' : 'Text'}
-                          </Badge>
-                          <span className="text-[11px] text-ink-faint font-mono">{item.time}</span>
-                        </div>
+                {/* Tab Switcher */}
+                <div className="flex border border-stone-dark rounded-sm mb-6 overflow-hidden">
+                  <button
+                    onClick={() => setActiveTab('receive')}
+                    className={`flex-1 px-4 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 ${
+                      activeTab === 'receive'
+                        ? 'bg-ink text-parchment'
+                        : 'bg-parchment text-ink-muted hover:bg-stone'
+                    }`}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Incoming
+                    {feed.length > 0 && <Badge variant="success">{feed.length}</Badge>}
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('send')}
+                    className={`flex-1 px-4 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 ${
+                      activeTab === 'send'
+                        ? 'bg-ink text-parchment'
+                        : 'bg-parchment text-ink-muted hover:bg-stone'
+                    }`}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    Send
+                  </button>
+                </div>
 
-                        {/* Content */}
-                        <div className="bg-stone/50 rounded-sm p-4 border border-stone-dark mb-4 max-h-70 overflow-y-auto">
-                          <p className="text-ink text-sm font-mono wrap-break-word leading-relaxed whitespace-pre-wrap">
-                            {item.content}
-                          </p>
+                {/* Receive Tab */}
+                {activeTab === 'receive' && (
+                  <>
+                    {feed.length === 0 ? (
+                      <div className="border border-dashed border-stone-dark rounded-sm py-20 flex flex-col items-center justify-center text-center bg-parchment/60 animate-in fade-in duration-500">
+                        <div className="w-12 h-12 rounded-sm border border-stone-dark flex items-center justify-center mb-4 text-ink-faint bg-stone">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+                          </svg>
                         </div>
-
-                        {/* Actions */}
-                        <div className="flex gap-2 justify-end">
-                          <Button variant="outline" size="sm" onClick={() => copyToClipboard(item.content)} className="gap-1.5">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                            </svg>
-                            Copy
-                          </Button>
-                          {item.type === 'url' && (
-                            <Button size="sm" onClick={() => openUrl(item.content)} className="gap-1.5">
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-                              </svg>
-                              Open Link
-                            </Button>
-                          )}
-                        </div>
+                        <h3 className="text-ink font-semibold mb-1">Awaiting Data</h3>
+                        <p className="text-sm text-ink-muted max-w-sm leading-relaxed">
+                          Once the other device transmits text, links, or files, they will appear here instantly.
+                        </p>
                       </div>
-                    ))}
+                    ) : (
+                      <div className="space-y-3">
+                        {feed.map(item => (
+                          <div
+                            key={item.id}
+                            className="border border-stone-dark bg-parchment rounded-sm p-5 hover:border-ink/20 hover:shadow-sm transition-all animate-in fade-in slide-in-from-bottom-8 duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] fill-mode-both"
+                          >
+                            {/* Item header */}
+                            <div className="flex items-center justify-between mb-3 pb-3 border-b border-stone-dark">
+                              <Badge variant="outline">
+                                {item.type === 'url' ? 'Link' : item.type === 'code' ? 'Code' : item.type === 'fastlane' ? 'FastLane' : 'Text'}
+                              </Badge>
+                              <span className="text-[11px] text-ink-faint font-mono">{item.time}</span>
+                            </div>
+
+                            {/* Content */}
+                            <div className="bg-stone/50 rounded-sm p-4 border border-stone-dark mb-4 max-h-70 overflow-y-auto">
+                              <p className="text-ink text-sm font-mono wrap-break-word leading-relaxed whitespace-pre-wrap">
+                                {item.content}
+                              </p>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-2 justify-end">
+                              <Button variant="outline" size="sm" onClick={() => copyToClipboard(item.content)} className="gap-1.5">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                </svg>
+                                Copy
+                              </Button>
+                              {item.type === 'url' && (
+                                <Button size="sm" onClick={() => openUrl(item.content)} className="gap-1.5">
+                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                                  </svg>
+                                  Open Link
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Send Tab */}
+                {activeTab === 'send' && (
+                  <div className="flex flex-col gap-5 animate-in fade-in duration-400">
+                    <Textarea
+                      value={textToSend}
+                      onChange={(e) => setTextToSend(e.target.value)}
+                      placeholder="Type or paste text to securely transmit…"
+                      className="h-36 font-mono text-sm"
+                    />
+                    <Button
+                      size="lg"
+                      className="w-full"
+                      onClick={() => {
+                        if (textToSend.trim() && sessionId) {
+                          sendClipboard(sessionId, textToSend)
+                          setTextToSend('')
+                        }
+                      }}
+                      disabled={!textToSend.trim()}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        Encrypt & Send
+                      </span>
+                    </Button>
+
+                    {/* File upload */}
+                    <div className="flex items-center gap-4">
+                      <div className="h-px flex-1 bg-stone-dark" />
+                      <span className="text-[10px] font-bold text-ink-faint uppercase tracking-widest">Or Send a File</span>
+                      <div className="h-px flex-1 bg-stone-dark" />
+                    </div>
+
+                    <label className={`flex items-center justify-center gap-3 px-5 py-3 rounded-sm border cursor-pointer transition-all duration-300 w-full ${uploading
+                        ? 'border-stone-dark bg-stone text-ink-muted cursor-not-allowed'
+                        : 'border-stone-dark bg-parchment hover:bg-stone hover:border-ink/40 text-ink'
+                      }`}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={uploading ? "animate-pulse" : ""}>
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                      </svg>
+                      <span className="text-sm font-semibold tracking-wide">
+                        {uploading ? `Encrypting ${uploadProgress}%...` : 'Choose File'}
+                      </span>
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileSelect}
+                        disabled={uploading || !sessionId}
+                      />
+                    </label>
+
+                    {/* Progress bar */}
+                    {uploading && (
+                      <div className="w-full bg-stone rounded-full h-1.5 border border-stone-dark">
+                        <div
+                          className="bg-ink h-full rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Status */}
+                    {uploadStatus === 'sent' && (
+                      <p className="text-xs text-green-700 font-medium">✅ File sent successfully</p>
+                    )}
+                    {uploadStatus === 'failed' && (
+                      <p className="text-xs text-red-700 font-medium">❌ Upload failed, try again</p>
+                    )}
                   </div>
                 )}
               </div>

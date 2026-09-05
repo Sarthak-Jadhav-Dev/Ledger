@@ -6,6 +6,9 @@
 export const safeDownload = async (fileUrl, filename) => {
   try {
     const response = await fetch(fileUrl)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
     const blob = await response.blob()
     const blobUrl = URL.createObjectURL(blob)
 

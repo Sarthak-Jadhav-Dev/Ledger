@@ -372,7 +372,7 @@ export default function Home() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-start gap-3">
               <Link href="/signup" id="cta-hero-get-started" className={linkButtonVariants('default', 'xl')}>Get Started</Link>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" id="cta-hero-github" className={linkButtonVariants('outline', 'xl') + ' gap-2'}>
+              <a href="https://github.com/Sarthak-Jadhav-Dev/Ledger" target="_blank" rel="noopener noreferrer" id="cta-hero-github" className={linkButtonVariants('outline', 'xl') + ' gap-2'}>
                 {icons.github} View on GitHub
               </a>
             </div>

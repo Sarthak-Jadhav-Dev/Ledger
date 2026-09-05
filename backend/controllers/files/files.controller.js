@@ -16,7 +16,7 @@ export const uploadFile = async (req, res) => {
     const { sessionId } = req.body
     const file = req.file
 
-    const downloadUrl = `${process.env.SERVER_URL}/api/upload/file/${file.filename}`
+    const downloadUrl = `${process.env.SERVER_URL}/api/v1/upload/file/${file.filename}`
 
     const timer = setTimeout(() => {
       deleteFileFromDisk(file.filename)

@@ -1,24 +1,27 @@
 "use client"
 import Link from "next/link";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../AuthContext";
 import { Button, linkButtonVariants } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { BACKEND_URL } from "@/lib/config";
-
 // Prevent static prerendering - this page requires dynamic client-side rendering
 export const dynamic = 'force-dynamic'
 
 export default function LoginPage() {
-
+  const router = useRouter();
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      router.replace("/dashboard");
+    }
+  }, [router])
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const router = useRouter();
   const { setUser } = useAuth();
 
   const handleLogin = async (e: any) => {

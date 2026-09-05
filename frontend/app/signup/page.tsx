@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import { Button } from '../components/ui/button';
@@ -12,13 +12,19 @@ import { BACKEND_URL } from '@/lib/config';
 export const dynamic = 'force-dynamic'
 
 export default function SignupPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      router.replace("/dashboard");
+    }
+  }, [router])
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()

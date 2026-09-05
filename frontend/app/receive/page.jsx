@@ -40,37 +40,21 @@ export default function DisplayPage() {
     onReceiveClipboard,
     onSessionKilled,
     onFastlaneReceive,
+    onFastlaneFileReady,
     onSessionError,
     socket,
     socketReady,
     connected
   } = useSocket()
 
+  const formatSize = (bytes) => {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
+
   useEffect(() => {
     handleCreateSession()
-    socket?.on('fastlane-file-ready', ({ fileUrl, filename, size }) => {
-      // Add to feed
-      addToFeed('file', {
-        url: fileUrl,
-        filename,
-        size: formatSize(size)
-      })
-
-      // Auto trigger browser download
-      const a = document.createElement('a')
-      a.href = fileUrl
-      a.download = filename
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-    })
-
-    // Format bytes helper
-    const formatSize = (bytes) => {
-      if (bytes < 1024) return `${bytes} B`
-      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-    }
   }, [])
 
   const handleCreateSession = async () => {
@@ -108,6 +92,21 @@ export default function DisplayPage() {
 
     onFastlaneReceive(({ payload }) => {
       addToFeed('fastlane', payload)
+    })
+
+    onFastlaneFileReady(({ fileUrl, filename, size }) => {
+      addToFeed('file', {
+        url: fileUrl,
+        filename,
+        size: formatSize(size)
+      })
+      // Auto trigger browser download
+      const a = document.createElement('a')
+      a.href = fileUrl
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
     })
 
     onSessionKilled(() => {
@@ -303,11 +302,10 @@ export default function DisplayPage() {
                 <div className="flex border border-stone-dark rounded-sm mb-6 overflow-hidden">
                   <button
                     onClick={() => setActiveTab('receive')}
-                    className={`flex-1 px-4 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 ${
-                      activeTab === 'receive'
+                    className={`flex-1 px-4 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'receive'
                         ? 'bg-ink text-parchment'
                         : 'bg-parchment text-ink-muted hover:bg-stone'
-                    }`}
+                      }`}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
@@ -317,11 +315,10 @@ export default function DisplayPage() {
                   </button>
                   <button
                     onClick={() => setActiveTab('send')}
-                    className={`flex-1 px-4 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 ${
-                      activeTab === 'send'
+                    className={`flex-1 px-4 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'send'
                         ? 'bg-ink text-parchment'
                         : 'bg-parchment text-ink-muted hover:bg-stone'
-                    }`}
+                      }`}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
@@ -427,8 +424,8 @@ export default function DisplayPage() {
                     </div>
 
                     <label className={`flex items-center justify-center gap-3 px-5 py-3 rounded-sm border cursor-pointer transition-all duration-300 w-full ${uploading
-                        ? 'border-stone-dark bg-stone text-ink-muted cursor-not-allowed'
-                        : 'border-stone-dark bg-parchment hover:bg-stone hover:border-ink/40 text-ink'
+                      ? 'border-stone-dark bg-stone text-ink-muted cursor-not-allowed'
+                      : 'border-stone-dark bg-parchment hover:bg-stone hover:border-ink/40 text-ink'
                       }`}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={uploading ? "animate-pulse" : ""}>
                         <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />

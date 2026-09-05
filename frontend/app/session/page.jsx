@@ -31,7 +31,13 @@ export default function ScanPage() {
   const [feed, setFeed] = useState([])
   const [activeTab, setActiveTab] = useState('send') // 'send' | 'receive'
 
-  const { joinSession, killSession, sendClipboard, sendFastlaneFile, paired, onSessionJoined, onSessionKilled, onSessionError, onReceiveClipboard, onFastlaneReceive, connected, socketReady, socket } = useSocket()
+  const { joinSession, killSession, sendClipboard, sendFastlaneFile, paired, onSessionJoined, onSessionKilled, onSessionError, onReceiveClipboard, onFastlaneReceive, onFastlaneFileReady, connected, socketReady, socket } = useSocket()
+
+  const formatSize = (bytes) => {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -71,12 +77,7 @@ export default function ScanPage() {
     })
 
     // Listen for file downloads
-    socket?.on('fastlane-file-ready', ({ fileUrl, filename, size }) => {
-      const formatSize = (bytes) => {
-        if (bytes < 1024) return `${bytes} B`
-        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-      }
+    onFastlaneFileReady(({ fileUrl, filename, size }) => {
       addToFeed('file', { url: fileUrl, filename, size: formatSize(size) })
       const a = document.createElement('a')
       a.href = fileUrl

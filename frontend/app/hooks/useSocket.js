@@ -88,6 +88,10 @@ export const useSocket = () => {
     socketRef.current?.on('session-error', cb)
   }, [])
 
+  const onFastlaneFileReady = useCallback((cb) => {
+    socketRef.current?.on('fastlane-file-ready', cb)
+  }, [])
+
   const detectType = (text) => {
     if (text.startsWith('http')) return 'url'
     if (text.includes('  ') || text.includes('\n')) return 'code'
@@ -107,6 +111,7 @@ export const useSocket = () => {
     onReceiveClipboard,
     onSessionKilled,
     onFastlaneReceive,
+    onFastlaneFileReady,
     onSessionError,
   }
 }

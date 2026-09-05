@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { Html5QrcodeScanner } from 'html5-qrcode'
 import { useSocket } from '../hooks/useSocket'
 import { uploadFile } from '../../lib/upload'
+import { safeDownload } from '../../lib/download'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import ProtectedRoute from '../ProtectRoute'
@@ -79,12 +80,8 @@ export default function ScanPage() {
     // Listen for file downloads
     onFastlaneFileReady(({ fileUrl, filename, size }) => {
       addToFeed('file', { url: fileUrl, filename, size: formatSize(size) })
-      const a = document.createElement('a')
-      a.href = fileUrl
-      a.download = filename
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
+      // Auto trigger browser download (blob-based to avoid cross-origin page navigation)
+      safeDownload(fileUrl, filename)
     })
   }, [socketReady])
 
@@ -98,6 +95,9 @@ export default function ScanPage() {
         fps: 10,
         qrbox: { width: 250, height: 250 },
         aspectRatio: 1.0,
+        videoConstraints: {
+          facingMode: { ideal: "environment" }
+        },
       }, false)
 
       scannerRef.current = scanner

@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import axoisInstance from '../helpers/axios'
 import { useSocket } from '../hooks/useSocket'
 import { uploadFile } from '../../lib/upload'
+import { safeDownload } from '../../lib/download'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import ProtectedRoute from '../ProtectRoute'
@@ -100,13 +101,8 @@ export default function DisplayPage() {
         filename,
         size: formatSize(size)
       })
-      // Auto trigger browser download
-      const a = document.createElement('a')
-      a.href = fileUrl
-      a.download = filename
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
+      // Auto trigger browser download (blob-based to avoid cross-origin page navigation)
+      safeDownload(fileUrl, filename)
     })
 
     onSessionKilled(() => {
